@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Faculty Event Management</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value" th:text="${totalEvents}">0</div>
+            <div class="stat-label">Total Events</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-value" th:text="${totalUsers}">0</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔧</div>
+            <div class="stat-value" th:text="${adminCount}">0</div>
+            <div class="stat-label">Admins</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👤</div>
+            <div class="stat-value" th:text="${regularUserCount}">0</div>
+            <div class="stat-label">Regular Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" th:text="${upcomingEvents}">0</div>
+            <div class="stat-label">Upcoming Events</div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+            <a th:href="@{/admin/events/add}" class="btn btn-primary">➕ Add New Event</a>
+            <a th:href="@{/admin/events}" class="btn btn-secondary">📋 Manage Events</a>
+            <a th:href="@{/admin/users}" class="btn btn-secondary">👥 Manage Users</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script th:src="@{/js/admin.js}"></script>
+</body>
+</html>
