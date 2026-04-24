@@ -80,7 +80,8 @@ public class AuthController {
 
     @GetMapping("/")
     public String defaultAfterLogin(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && 
+            authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
             if (user.getRole() == Role.ADMIN) {
                 return "redirect:/admin/dashboard";

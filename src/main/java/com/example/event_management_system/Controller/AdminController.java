@@ -58,7 +58,7 @@ public class AdminController {
         try {
             eventService.createEvent(eventDTO, user);
             redirectAttributes.addFlashAttribute("successMessage", "Event created successfully!");
-            return "redirect:/admin/events/add";
+            return "redirect:/admin/events/get";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Error creating event: " + e.getMessage());
             return "admin/add-event";

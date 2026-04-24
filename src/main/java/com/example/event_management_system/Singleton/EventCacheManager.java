@@ -1,4 +1,4 @@
-git package com.example.event_management_system.Singleton;
+package com.example.event_management_system.Singleton;
 
 import com.example.event_management_system.Model.Event;
 import org.springframework.stereotype.Component;
