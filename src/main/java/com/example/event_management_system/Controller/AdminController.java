@@ -39,7 +39,7 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/events/get")
+    @GetMapping("/events/add")
     public String showAddEventForm(Model model) {
         model.addAttribute("event", new EventDTO());
         return "admin/add-event";
