@@ -1,6 +1,7 @@
 package com.example.event_management_system.Repo;
 
 import com.example.event_management_system.Model.Event;
+import com.example.event_management_system.Model.EventStatus;
 import com.example.event_management_system.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,8 +15,14 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByCreatedBy(User createdBy);
+    
+    // Find all events with a specific status (PENDING, APPROVED, etc.)
+    List<Event> findByStatus(EventStatus status);
 
     List<Event> findByEventDateAfterOrderByEventDateAsc(LocalDateTime date);
+
+    // Find upcoming events that have been APPROVED
+    List<Event> findByEventDateAfterAndStatusOrderByEventDateAsc(LocalDateTime date, EventStatus status);
 
     List<Event> findByEventDateBetweenOrderByEventDateAsc(LocalDateTime start, LocalDateTime end);
 
