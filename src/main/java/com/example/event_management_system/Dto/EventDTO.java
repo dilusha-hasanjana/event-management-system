@@ -1,45 +1,34 @@
 package com.example.event_management_system.Dto;
 
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
 public class EventDTO {
     private Long id;
+
+    @NotBlank(message = "Event title is required")
+    @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters")
     private String title;
+
+    @NotBlank(message = "Description is required")
+    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
     private String description;
+
+    @NotBlank(message = "Location is required")
+    @Size(min = 2, max = 200, message = "Location must be between 2 and 200 characters")
     private String location;
+
+    @NotNull(message = "Event date is required")
+    @Future(message = "Event date must be in the future")
     private LocalDateTime eventDate;
+
     private String createdByUsername;
     private boolean premium;
     private boolean featured;
     private int attendeeCount;
-
-    public EventDTO() {}
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
-
-    public String getCreatedByUsername() { return createdByUsername; }
-    public void setCreatedByUsername(String createdByUsername) { this.createdByUsername = createdByUsername; }
-
-    public boolean isPremium() { return premium; }
-    public void setPremium(boolean premium) { this.premium = premium; }
-
-    public boolean isFeatured() { return featured; }
-    public void setFeatured(boolean featured) { this.featured = featured; }
-
-    public int getAttendeeCount() { return attendeeCount; }
-    public void setAttendeeCount(int attendeeCount) { this.attendeeCount = attendeeCount; }
 }

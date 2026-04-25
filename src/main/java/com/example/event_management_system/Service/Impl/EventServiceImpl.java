@@ -1,19 +1,20 @@
 package com.example.event_management_system.Service.Impl;
 
-import com.example.event_management_system.Decorator.FeaturedEventDecorator;
-import com.example.event_management_system.Decorator.PremiumEventDecorator;
 import com.example.event_management_system.Dto.EventDTO;
 import com.example.event_management_system.Factory.EventFactory;
 import com.example.event_management_system.Model.Event;
+import com.example.event_management_system.Model.EventStatus;
+import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Observer.EventNotifier;
 import com.example.event_management_system.Repo.EventRepository;
+import com.example.event_management_system.Repo.UserRepository;
 import com.example.event_management_system.Service.EventService;
-import com.example.event_management_system.Singleton.EventCacheManager;
 import com.example.event_management_system.Strategy.EventSearchStrategy;
 import com.example.event_management_system.Strategy.SearchByDateStrategy;
 import com.example.event_management_system.Strategy.SearchByLocationStrategy;
 import com.example.event_management_system.Strategy.SearchByTitleStrategy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,23 +25,24 @@ import java.util.Map;
 
 @Service
 @Transactional
+@Slf4j
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
     private final EventNotifier eventNotifier;
-    private final EventCacheManager cacheManager;
     private final Map<String, EventSearchStrategy> searchStrategies;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository,
+                            UserRepository userRepository,
                             EventNotifier eventNotifier,
-                            EventCacheManager cacheManager,
                             SearchByTitleStrategy titleStrategy,
                             SearchByDateStrategy dateStrategy,
                             SearchByLocationStrategy locationStrategy) {
         this.eventRepository = eventRepository;
+        this.userRepository = userRepository;
         this.eventNotifier = eventNotifier;
-        this.cacheManager = cacheManager;
 
         this.searchStrategies = new HashMap<>();
         this.searchStrategies.put("TITLE", titleStrategy);
@@ -86,9 +88,13 @@ public class EventServiceImpl implements EventService {
             );
         }
 
+        // If an ADMIN creates the event, it is APPROVED immediately
+        if (createdBy.getRole() == Role.ADMIN) {
+            event.setStatus(EventStatus.APPROVED);
+        }
+
         Event savedEvent = eventRepository.save(event);
         eventNotifier.eventCreated(savedEvent);
-        cacheManager.cacheEvent(savedEvent);
 
         return savedEvent;
     }
@@ -106,7 +112,6 @@ public class EventServiceImpl implements EventService {
 
         Event updatedEvent = eventRepository.save(event);
         eventNotifier.eventUpdated(updatedEvent);
-        cacheManager.cacheEvent(updatedEvent);
 
         return updatedEvent;
     }
@@ -116,16 +121,10 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(id);
         eventRepository.delete(event);
         eventNotifier.eventDeleted(event);
-        cacheManager.removeCachedEvent(id);
     }
 
     @Override
     public Event getEventById(Long id) {
-        Event cachedEvent = cacheManager.getCachedEvent(id);
-        if (cachedEvent != null) {
-            return cachedEvent;
-        }
-
         return eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
     }
@@ -137,9 +136,32 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getUpcomingEvents() {
-        return eventRepository.findByEventDateAfterOrderByEventDateAsc(
-                java.time.LocalDateTime.now()
+        // Only show events that are APPROVED and in the future
+        return eventRepository.findByEventDateAfterAndStatusOrderByEventDateAsc(
+                java.time.LocalDateTime.now(),
+                EventStatus.APPROVED
         );
+    }
+
+    @Override
+    public List<Event> getPendingEvents() {
+        // Get all events that are waiting for admin approval
+        return eventRepository.findByStatus(EventStatus.PENDING);
+    }
+
+    @Override
+    public void approveEvent(Long id) {
+        Event event = getEventById(id);
+        event.setStatus(EventStatus.APPROVED);
+        eventRepository.save(event);
+        // We could also notify the organizer here using eventNotifier
+    }
+
+    @Override
+    public void rejectEvent(Long id) {
+        Event event = getEventById(id);
+        event.setStatus(EventStatus.REJECTED);
+        eventRepository.save(event);
     }
 
     @Override
@@ -162,14 +184,19 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event registerUserForEvent(Long eventId, User user) {
         Event event = getEventById(eventId);
+        
+        // Re-fetch user from DB to ensure it's attached to the persistence context
+        // This avoids LazyInitializationException when accessing registeredEvents
+        User attachedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (event.getAttendees().contains(user)) {
+        if (event.getAttendees().contains(attachedUser)) {
             throw new RuntimeException("User already registered for this event");
         }
 
-        user.registerForEvent(event);
+        attachedUser.registerForEvent(event);
         Event updatedEvent = eventRepository.save(event);
-        eventNotifier.userRegistered(updatedEvent, user.getUsername());
+        eventNotifier.userRegistered(updatedEvent, attachedUser.getUsername());
 
         return updatedEvent;
     }
@@ -177,12 +204,16 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event unregisterUserFromEvent(Long eventId, User user) {
         Event event = getEventById(eventId);
+        
+        // Re-fetch user from DB to ensure it's attached to the persistence context
+        User attachedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!event.getAttendees().contains(user)) {
+        if (!event.getAttendees().contains(attachedUser)) {
             throw new RuntimeException("User is not registered for this event");
         }
 
-        user.unregisterFromEvent(event);
+        attachedUser.unregisterFromEvent(event);
         return eventRepository.save(event);
     }
 
@@ -192,25 +223,54 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> getPremiumEvents() {
-        List<Event> premiumEvents = eventRepository.findPremiumEvents();
-
-        return premiumEvents.stream()
-                .map(PremiumEventDecorator::new)
-                .collect(java.util.stream.Collectors.toList());
-    }
-
-    @Override
-    public List<Event> getFeaturedEvents() {
-        List<Event> featuredEvents = eventRepository.findFeaturedEvents();
-
-        return featuredEvents.stream()
-                .map(FeaturedEventDecorator::new)
-                .collect(java.util.stream.Collectors.toList());
-    }
-
-    @Override
     public long getTotalEventCount() {
         return eventRepository.count();
+    }
+
+    // ---- Organizer-specific CRUD (ownership + PENDING status enforcement) ----
+
+    @Override
+    public Event updateOrganizerEvent(Long id, EventDTO eventDTO, User organizer) {
+        Event event = getEventById(id);
+
+        // Validate ownership
+        if (!event.getCreatedBy().getId().equals(organizer.getId())) {
+            throw new RuntimeException("You can only edit events you created.");
+        }
+
+        // Validate status
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new RuntimeException("Only PENDING events can be edited. This event is " + event.getStatus() + ".");
+        }
+
+        event.setTitle(eventDTO.getTitle());
+        event.setDescription(eventDTO.getDescription());
+        event.setLocation(eventDTO.getLocation());
+        event.setEventDate(eventDTO.getEventDate());
+
+        Event updatedEvent = eventRepository.save(event);
+        eventNotifier.eventUpdated(updatedEvent);
+        log.info("Organizer '{}' updated PENDING event: {}", organizer.getUsername(), event.getTitle());
+
+        return updatedEvent;
+    }
+
+    @Override
+    public void deleteOrganizerEvent(Long id, User organizer) {
+        Event event = getEventById(id);
+
+        // Validate ownership
+        if (!event.getCreatedBy().getId().equals(organizer.getId())) {
+            throw new RuntimeException("You can only delete events you created.");
+        }
+
+        // Validate status
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new RuntimeException("Only PENDING events can be deleted. This event is " + event.getStatus() + ".");
+        }
+
+        eventRepository.delete(event);
+        eventNotifier.eventDeleted(event);
+        log.info("Organizer '{}' deleted PENDING event: {}", organizer.getUsername(), event.getTitle());
     }
 }

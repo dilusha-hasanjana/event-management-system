@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard - Faculty Event Management</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h1>Organizer Dashboard</h1>
+    <p>Welcome, <span th:text="${user.fullName}">Organizer</span>!</p>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-value" th:text="${totalEvents}">0</div>
+            <div class="stat-label">Total Requests</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-value" th:text="${pendingEvents}">0</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" th:text="${approvedEvents}">0</div>
+            <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">❌</div>
+            <div class="stat-value" th:text="${rejectedEvents}">0</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+    
+    <div class="quick-actions" style="margin-top: 2rem;">
+        <h3>Quick Actions</h3>
+        <div class="action-buttons">
+            <a th:href="@{/organizer/events}" class="btn btn-secondary">📋 Manage Request Events</a>
+            <a th:href="@{/organizer/events/new}" class="btn btn-primary">➕ Request New Event</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

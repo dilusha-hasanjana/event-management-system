@@ -8,6 +8,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * ========================================
+ * DESIGN PATTERN: Strategy Pattern (Concrete Strategy)
+ * ========================================
+ * Purpose: Searches events by matching the event date.
+ * How it works: Filters events where the date matches the search date string (format: yyyy-MM-dd).
+ */
 @Component
 public class SearchByDateStrategy implements EventSearchStrategy {
 

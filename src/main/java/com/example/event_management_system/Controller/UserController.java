@@ -3,7 +3,7 @@ package com.example.event_management_system.Controller;
 import com.example.event_management_system.Model.Event;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.EventService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +14,10 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
     private final EventService eventService;
-
-    @Autowired
-    public UserController(EventService eventService) {
-        this.eventService = eventService;
-    }
 
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal User user, Model model) {

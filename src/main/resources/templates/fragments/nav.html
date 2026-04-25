@@ -7,8 +7,18 @@
         <ul sec:authorize="hasAuthority('ADMIN')" class="nav-menu">
             <li><a th:href="@{/admin/dashboard}">Dashboard</a></li>
             <li><a th:href="@{/admin/events}">Manage Events</a></li>
-            <li><a th:href="@{/admin/events/get}">Add Event</a></li>
+            <!-- Removed 'Add Event' link as it's accessible via 'Manage Events' -->
+            <li><a th:href="@{/admin/events/requests}">Event Requests</a></li>
             <li><a th:href="@{/admin/users}">Manage Users</a></li>
+        </ul>
+
+        <ul sec:authorize="hasAuthority('ORGANIZER')" class="nav-menu">
+            <li><a th:href="@{/organizer/dashboard}">Dashboard</a></li>
+            <li><a th:href="@{/organizer/events/new}">Request Event</a></li>
+            <li><a th:href="@{/organizer/events}">Manage Request Events</a></li>
+            <!-- Organizers can also browse and register for events as students -->
+            <li><a th:href="@{/user/events}">Browse Events</a></li>
+            <li><a th:href="@{/user/my-events}">My Registrations</a></li>
         </ul>
 
         <ul sec:authorize="hasAuthority('USER')" class="nav-menu">
