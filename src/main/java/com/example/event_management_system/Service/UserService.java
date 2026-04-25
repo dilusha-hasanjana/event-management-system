@@ -20,6 +20,7 @@ public interface UserService {
     boolean existsByEmail(String email);
     User registerForEvent(Long userId, Long eventId);
     User unregisterFromEvent(Long userId, Long eventId);
+    User updateProfile(Long userId, UserDTO userDTO);
     long getTotalUserCount();
     long getAdminCount();
     long getRegularUserCount();

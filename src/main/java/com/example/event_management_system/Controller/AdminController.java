@@ -28,7 +28,8 @@ public class AdminController {
     private final UserService userService;
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
         model.addAttribute("totalEvents", eventService.getTotalEventCount());
         model.addAttribute("totalUsers", userService.getTotalUserCount());
         model.addAttribute("adminCount", userService.getAdminCount());
@@ -38,7 +39,8 @@ public class AdminController {
     }
 
     @GetMapping("/events/get")
-    public String showAddEventForm(Model model) {
+    public String showAddEventForm(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
         model.addAttribute("event", new EventDTO());
         return "admin/add-event";
     }
@@ -49,6 +51,7 @@ public class AdminController {
                            @AuthenticationPrincipal User user,
                            RedirectAttributes redirectAttributes,
                            Model model) {
+        model.addAttribute("user", user);
         if (result.hasErrors()) {
             return "admin/add-event";
         }
@@ -64,8 +67,9 @@ public class AdminController {
     }
 
     @GetMapping("/events")
-    public String listEvents(Model model) {
+    public String listEvents(@AuthenticationPrincipal User user, Model model) {
         List<Event> events = eventService.getAllEvents();
+        model.addAttribute("user", user);
         model.addAttribute("events", events);
         return "admin/manage-events";
     }
@@ -114,8 +118,9 @@ public class AdminController {
 
     // List all event requests that are waiting for approval
     @GetMapping("/events/requests")
-    public String listPendingRequests(Model model) {
+    public String listPendingRequests(@AuthenticationPrincipal User user, Model model) {
         List<Event> pendingEvents = eventService.getPendingEvents();
+        model.addAttribute("user", user);
         model.addAttribute("events", pendingEvents);
         return "admin/event-requests";
     }
@@ -145,8 +150,9 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String manageUsers(Model model) {
+    public String manageUsers(@AuthenticationPrincipal User user, Model model) {
         List<User> users = userService.getAllUsers();
+        model.addAttribute("user", user);
         model.addAttribute("users", users);
         return "admin/manage-users";
     }

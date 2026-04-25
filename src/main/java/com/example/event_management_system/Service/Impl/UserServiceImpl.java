@@ -143,6 +143,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateProfile(Long userId, UserDTO userDTO) {
+        User user = getUserById(userId);
+
+        // Safe updates for profile
+        user.setFullName(userDTO.getFullName());
+        user.setEmail(userDTO.getEmail());
+
+        // Password update if provided
+        if (userDTO.getPassword() != null && !userDTO.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            log.info("Password updated for user: {}", user.getUsername());
+        }
+
+        // We explicitly do NOT update role or active status here for security
+        log.info("Profile updated for user: {}", user.getUsername());
+        return userRepository.save(user);
+    }
+
+    @Override
     public long getTotalUserCount() {
         return userRepository.count();
     }

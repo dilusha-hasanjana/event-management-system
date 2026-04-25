@@ -12,8 +12,7 @@
 <div th:replace="~{fragments/nav :: nav}"></div>
 
 <div class="container">
-    <h1>Organizer Dashboard</h1>
-    <p>Welcome, <span th:text="${user.fullName}">Organizer</span>!</p>
+    <div th:replace="~{fragments/identity :: identity-card}"></div>
 
     <!-- Stats Overview -->
     <div class="stats-grid">

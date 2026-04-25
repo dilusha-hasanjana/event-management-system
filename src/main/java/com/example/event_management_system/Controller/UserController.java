@@ -36,16 +36,19 @@ public class UserController {
         List<Event> allEvents = eventService.getUpcomingEvents();
         List<Event> myEvents = eventService.getUserRegisteredEvents(user);
 
+        model.addAttribute("user", user);
         model.addAttribute("events", allEvents);
         model.addAttribute("myEventIds", myEvents.stream().map(Event::getId).toList());
         return "user/view-events";
     }
 
     @GetMapping("/events/search")
-    public String searchEvents(@RequestParam String keyword,
+    public String searchEvents(@AuthenticationPrincipal User user,
+                               @RequestParam String keyword,
                                @RequestParam(required = false, defaultValue = "TITLE") String strategy,
                                Model model) {
         List<Event> searchResults = eventService.searchEvents(keyword, strategy);
+        model.addAttribute("user", user);
         model.addAttribute("events", searchResults);
         model.addAttribute("searchKeyword", keyword);
         model.addAttribute("searchStrategy", strategy);
@@ -81,6 +84,7 @@ public class UserController {
     @GetMapping("/my-events")
     public String myEvents(@AuthenticationPrincipal User user, Model model) {
         List<Event> myEvents = eventService.getUserRegisteredEvents(user);
+        model.addAttribute("user", user);
         model.addAttribute("events", myEvents);
         return "user/my-events";
     }

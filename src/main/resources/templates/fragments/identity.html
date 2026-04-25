@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="identity-card" class="identity-card animate-fade-in" th:if="${user != null}">
+        <div class="identity-content">
+            <div class="user-avatar">
+                <span th:text="${user.fullName != null && !user.fullName.isEmpty() ? #strings.substring(user.fullName, 0, 1) : 'U'}">U</span>
+            </div>
+            <div class="user-details">
+                <div class="greeting-row">
+                    <h2 class="welcome-msg">Welcome back, <span th:text="${user.fullName}">User</span>! 👋</h2>
+                    <span th:class="'badge badge-' + ${user.role.name().toLowerCase()}" th:text="${user.role}">Role</span>
+                </div>
+                <p class="identity-meta">
+                    Logged in as <strong th:text="${user.username}">username</strong> • 
+                    <a th:href="@{/profile}" class="edit-profile-link">Manage Account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
