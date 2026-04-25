@@ -8,7 +8,8 @@ import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Repo.EventRepository;
 import com.example.event_management_system.Repo.UserRepository;
 import com.example.event_management_system.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,20 +18,13 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-                           EventRepository eventRepository,
-                           PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.eventRepository = eventRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public User createUser(UserDTO userDTO, Role role) {
@@ -68,6 +62,10 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setActive(userDTO.isActive());
+        
+        if (userDTO.getRole() != null) {
+            user.setRole(userDTO.getRole());
+        }
 
         return userRepository.save(user);
     }
@@ -76,6 +74,20 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         User user = getUserById(id);
         userRepository.delete(user);
+    }
+
+    @Override
+    public void changeUserRole(Long id, Role role) {
+        User user = getUserById(id);
+        user.setRole(role); // Update the user's role
+        userRepository.save(user);
+    }
+
+    @Override
+    public void toggleUserStatus(Long id) {
+        User user = getUserById(id);
+        user.setActive(!user.isActive()); // Switch between true and false
+        userRepository.save(user);
     }
 
     @Override
