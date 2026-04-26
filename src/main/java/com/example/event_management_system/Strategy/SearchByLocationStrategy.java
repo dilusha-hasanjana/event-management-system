@@ -6,13 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * ========================================
- * DESIGN PATTERN: Strategy Pattern (Concrete Strategy)
- * ========================================
- * Purpose: Searches events by matching the location field.
- * How it works: Filters events where the location contains the search keyword (case-insensitive).
- */
+
 @Component
 public class SearchByLocationStrategy implements EventSearchStrategy {
 

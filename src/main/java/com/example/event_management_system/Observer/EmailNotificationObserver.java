@@ -6,15 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-/**
- * ========================================
- * DESIGN PATTERN: Observer Pattern (Concrete Observer)
- * ========================================
- * Purpose: A concrete observer that sends email notifications when events change.
- * How it works: Implements EventObserver interface and reacts to event actions.
- * Why we use it: Separates notification logic from business logic.
- *                We can add more observers (SMS, Push, etc.) without changing the notifier.
- */
+
 @Component
 @RequiredArgsConstructor
 @Slf4j

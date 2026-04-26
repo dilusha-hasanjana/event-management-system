@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private String fullName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20) // Sized to fit ORGANIZER and future roles
+    @Column(nullable = false, length = 20) 
     private Role role;
 
     @Column(nullable = false)

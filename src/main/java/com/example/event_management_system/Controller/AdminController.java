@@ -3,7 +3,6 @@ package com.example.event_management_system.Controller;
 import com.example.event_management_system.Dto.EventDTO;
 import com.example.event_management_system.Dto.UserDTO;
 import com.example.event_management_system.Model.Event;
-import com.example.event_management_system.Model.EventStatus;
 import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.EventService;

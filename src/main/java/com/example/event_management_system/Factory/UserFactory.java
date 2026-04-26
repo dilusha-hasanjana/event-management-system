@@ -3,14 +3,7 @@ package com.example.event_management_system.Factory;
 import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 
-/**
- * ========================================
- * DESIGN PATTERN: Factory Method Pattern
- * ========================================
- * Purpose: Creates different types of User objects (Admin, User, Faculty).
- * How it works: Provides static methods to create users with correct roles.
- * Why we use it: Prevents mistakes when creating users - each method sets the right role automatically.
- */
+
 public class UserFactory {
 
     // Create an Admin user

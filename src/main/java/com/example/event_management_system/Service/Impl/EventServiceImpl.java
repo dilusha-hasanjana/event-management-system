@@ -171,7 +171,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> searchEvents(String keyword, String strategyType) {
-        
+        // Only search events that are APPROVED to ensure users don't find pending requests
         List<Event> searchPool = eventRepository.findByStatus(EventStatus.APPROVED);
 
         EventSearchStrategy strategy = searchStrategies.getOrDefault(
