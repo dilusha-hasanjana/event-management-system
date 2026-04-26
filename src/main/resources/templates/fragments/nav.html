@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <aside th:fragment="nav" class="sidebar">
+=======
+<aside th:fragment="nav" class="sidebar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>>>>>>> e33cc71ecc2db42cf20f55966e9e78751704d5a6
     <div class="sidebar-header">
         <div class="brand-logo">📅</div>
         <div class="brand-text">EventHub</div>
@@ -51,6 +55,17 @@
         </ul>
     </nav>
 
+<<<<<<< HEAD
+=======
+        <!-- Common Link -->
+        <ul style="list-style: none;">
+            <li><a th:href="@{/profile}" class="nav-item">
+                <span>👤</span> <span>My Profile</span>
+            </a></li>
+        </ul>
+    </nav>
+
+>>>>>>> e33cc71ecc2db42cf20f55966e9e78751704d5a6
     <div class="sidebar-footer">
         <form th:action="@{/logout}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -59,4 +74,8 @@
             </button>
         </form>
     </div>
+<<<<<<< HEAD
 </aside>
+=======
+</aside>
+>>>>>>> e33cc71ecc2db42cf20f55966e9e78751704d5a6

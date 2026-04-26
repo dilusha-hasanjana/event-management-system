@@ -54,7 +54,11 @@
                             <form th:action="@{/admin/events/approve/{id}(id=${event.id})}" method="post">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                 <button type="submit" class="btn btn-primary btn-sm" style="background: var(--success); border: none;">
+<<<<<<< HEAD
                                     <span>✅</span> Approve
+=======
+                                    <span></span> Approve
+>>>>>>> e33cc71ecc2db42cf20f55966e9e78751704d5a6
                                 </button>
                             </form>
                             
@@ -62,7 +66,11 @@
                                   onsubmit="return confirm('Are you sure you want to reject this request?')">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                 <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--danger); border-color: var(--danger-soft);">
+<<<<<<< HEAD
                                     <span>❌</span> Reject
+=======
+                                    <span></span> Reject
+>>>>>>> e33cc71ecc2db42cf20f55966e9e78751704d5a6
                                 </button>
                             </form>
                         </div>
