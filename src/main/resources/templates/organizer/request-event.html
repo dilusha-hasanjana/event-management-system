@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request New Event - Faculty Event Management</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}"> <!-- Using admin styles for consistency -->
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <div class="form-container">
+        <h2>Submit Event Request</h2>
+        <p>Fill in the details below to request a new event. Admin will review and approve it.</p>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <!-- The form to submit the request -->
+        <form th:action="@{/organizer/events/request}" th:object="${event}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="form-label">
+                        <label for="title">Event Title: <span class="required">*</span></label>
+                    </div>
+                    <div class="form-input">
+                        <input type="text" id="title" th:field="*{title}" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-label">
+                        <label for="description">Detailed Description: <span class="required">*</span></label>
+                    </div>
+                    <div class="form-input">
+                        <textarea id="description" th:field="*{description}" class="form-control" rows="5" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-label">
+                        <label for="location">Location/Venue: <span class="required">*</span></label>
+                    </div>
+                    <div class="form-input">
+                        <input type="text" id="location" th:field="*{location}" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-label">
+                        <label for="eventDate">Preferred Date & Time: <span class="required">*</span></label>
+                    </div>
+                    <div class="form-input">
+                        <input type="datetime-local" id="eventDate" th:field="*{eventDate}" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-label"></div>
+                    <div class="form-input">
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                        <a th:href="@{/organizer/dashboard}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
