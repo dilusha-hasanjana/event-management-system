@@ -1,30 +1,52 @@
 package com.example.event_management_system.Observer;
 
 import com.example.event_management_system.Model.Event;
+import com.example.event_management_system.Service.EmailService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class EmailNotificationObserver implements EventObserver {
+
+    private final EmailService emailService;
 
     @Override
     public void update(Event event, String action) {
+        if (event == null || event.getCreatedBy() == null) {
+            return;
+        }
+
+        String to = event.getCreatedBy().getEmail();
+        log.info("Event notification - Title: {}, CreatedBy: {}, Email: {}", event.getTitle(), event.getCreatedBy(), to);
+        if (to == null || to.isBlank()) {
+            return;
+        }
+
         switch (action) {
             case "CREATED":
-                sendEmail("New Event Created: " + event.getTitle(),
-                        "Event created at " + event.getLocation());
+                emailService.sendEmail(to,
+                        "New Event Created: " + event.getTitle(),
+                        "Your event '" + event.getTitle() + "' has been created at " + event.getLocation() + ".");
                 break;
             case "UPDATED":
-                sendEmail("Event Updated: " + event.getTitle(),
-                        "Event details have been updated");
+                emailService.sendEmail(to,
+                        "Event Updated: " + event.getTitle(),
+                        "Your event '" + event.getTitle() + "' has been updated.");
                 break;
             case "DELETED":
-                sendEmail("Event Cancelled: " + event.getTitle(),
-                        "The event has been cancelled");
+                emailService.sendEmail(to,
+                        "Event Cancelled: " + event.getTitle(),
+                        "Your event '" + event.getTitle() + "' has been cancelled.");
                 break;
             default:
-                if (action.startsWith("USER_REGISTERED")) {
-                    String username = action.split(":")[1];
-                    sendEmail("New Registration", username + " registered for " + event.getTitle());
+                if (action.startsWith("USER_REGISTERED:")) {
+                    String username = action.split(":", 2)[1];
+                    emailService.sendEmail(to,
+                            "New Registration for " + event.getTitle(),
+                            username + " has registered for your event '" + event.getTitle() + "'.");
                 }
         }
     }
@@ -34,7 +56,4 @@ public class EmailNotificationObserver implements EventObserver {
         return "EMAIL_NOTIFICATION";
     }
 
-    private void sendEmail(String subject, String body) {
-        System.out.println("Email Sent - Subject: " + subject + ", Body: " + body);
-    }
 }
