@@ -1,0 +1,15 @@
+<div th:fragment="identity-card" class="card glass-card animate-up" th:if="${user != null}" style="background: linear-gradient(135deg, var(--primary), #818cf8); color: white; border: none;">
+    <div style="display: flex; align-items: center; gap: 2rem;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; border: 2px solid rgba(255, 255, 255, 0.4);">
+            <span th:text="${user.fullName != null && !user.fullName.isEmpty() ? #strings.substring(user.fullName, 0, 1) : 'U'}">U</span>
+        </div>
+        <div>
+            <h2 style="color: white; margin-bottom: 0.25rem;">Welcome back, <span th:text="${user.fullName}">User</span>! 👋</h2>
+            <p style="opacity: 0.9; margin-bottom: 1rem;">You are logged in as <span th:text="${user.role}">Role</span>. Manage your events and profile with ease.</p>
+            <div style="display: flex; gap: 1rem;">
+                <span class="badge" style="background: rgba(255, 255, 255, 0.2); color: white;" th:text="${user.username}">username</span>
+                <a th:href="@{/profile}" class="btn btn-secondary btn-sm" style="background: white; color: var(--primary);">Manage Account</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,13 +4,9 @@ import com.example.event_management_system.Dto.UserDTO;
 import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,14 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
-
-    @Autowired
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/login")
     public String login(@RequestParam(required = false) String error,
@@ -55,6 +47,12 @@ public class AuthController {
             return "auth/register";
         }
 
+        // Check if passwords match
+        if (userDTO.getPassword() != null && !userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+            model.addAttribute("passwordError", "Passwords do not match!");
+            return "auth/register";
+        }
+
         if (userService.existsByUsername(userDTO.getUsername())) {
             model.addAttribute("usernameError", "Username already exists!");
             return "auth/register";
@@ -80,10 +78,13 @@ public class AuthController {
 
     @GetMapping("/")
     public String defaultAfterLogin(Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated() && 
+            authentication.getPrincipal() instanceof User) {
             User user = (User) authentication.getPrincipal();
             if (user.getRole() == Role.ADMIN) {
                 return "redirect:/admin/dashboard";
+            } else if (user.getRole() == Role.ORGANIZER) {
+                return "redirect:/organizer/dashboard"; // Redirect Organizers to their dashboard
             } else {
                 return "redirect:/user/dashboard";
             }
