@@ -3,6 +3,7 @@ package com.example.event_management_system.Controller;
 import com.example.event_management_system.Dto.EventDTO;
 import com.example.event_management_system.Dto.UserDTO;
 import com.example.event_management_system.Model.Event;
+import com.example.event_management_system.Model.EventStatus;
 import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.EventService;
@@ -125,7 +126,7 @@ public class AdminController {
         return "redirect:/admin/events";
     }
 
-    
+    // List all event requests that are waiting for approval
     @GetMapping("/events/requests")
     public String listPendingRequests(@AuthenticationPrincipal User user, Model model) {
         List<Event> pendingEvents = eventService.getPendingEvents();
@@ -134,7 +135,7 @@ public class AdminController {
         return "admin/event-requests";
     }
 
-    
+    // Approve an event request
     @PostMapping("/events/approve/{id}")
     public String approveEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -146,7 +147,7 @@ public class AdminController {
         return "redirect:/admin/events/requests";
     }
 
-    
+    // Reject an event request
     @PostMapping("/events/reject/{id}")
     public String rejectEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -169,7 +170,7 @@ public class AdminController {
     @PostMapping("/users/toggle/{id}")
     public String toggleUserStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-        
+            // Use the new safe method that only touches the 'active' field
             userService.toggleUserStatus(id);
             
             User user = userService.getUserById(id);

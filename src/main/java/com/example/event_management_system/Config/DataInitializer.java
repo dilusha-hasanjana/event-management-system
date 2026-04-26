@@ -6,23 +6,20 @@ import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.EventService;
 import com.example.event_management_system.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserService userService;
     private final EventService eventService;
-
-    @Autowired
-    public DataInitializer(UserService userService, EventService eventService) {
-        this.userService = userService;
-        this.eventService = eventService;
-    }
 
     @Override
     public void run(String... args) {
@@ -33,8 +30,8 @@ public class DataInitializer implements CommandLineRunner {
             adminDTO.setPassword("admin123");
             adminDTO.setFullName("System Administrator");
 
-            User admin = userService.createUser(adminDTO, Role.ADMIN);
-            System.out.println("Admin user created: admin / admin123");
+            userService.createUser(adminDTO, Role.ADMIN);
+            log.info("Admin user created: admin / admin123");
         }
 
         if (!userService.existsByUsername("user")) {
@@ -44,8 +41,8 @@ public class DataInitializer implements CommandLineRunner {
             userDTO.setPassword("user123");
             userDTO.setFullName("John Doe");
 
-            User user = userService.createUser(userDTO, Role.USER);
-            System.out.println("Sample user created: user / user123");
+            userService.createUser(userDTO, Role.USER);
+            log.info("Sample user created: user / user123");
         }
 
         if (eventService.getTotalEventCount() == 0) {
@@ -78,7 +75,7 @@ public class DataInitializer implements CommandLineRunner {
             event3.setFeatured(false);
             eventService.createEvent(event3, admin);
 
-            System.out.println("Sample events created successfully!");
+            log.info("Sample events created successfully!");
         }
     }
 }

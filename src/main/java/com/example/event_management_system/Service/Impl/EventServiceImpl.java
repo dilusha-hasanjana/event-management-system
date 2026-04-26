@@ -88,7 +88,7 @@ public class EventServiceImpl implements EventService {
             );
         }
 
-        
+        // If an ADMIN creates the event, it is APPROVED immediately
         if (createdBy.getRole() == Role.ADMIN) {
             event.setStatus(EventStatus.APPROVED);
         }
@@ -136,7 +136,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getUpcomingEvents() {
-    
+        // Only show events that are APPROVED and in the future
         return eventRepository.findByEventDateAfterAndStatusOrderByEventDateAsc(
                 java.time.LocalDateTime.now(),
                 EventStatus.APPROVED
@@ -145,7 +145,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getPendingEvents() {
-        
+        // Get all events that are waiting for admin approval
         return eventRepository.findByStatus(EventStatus.PENDING);
     }
 
@@ -154,7 +154,7 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(id);
         event.setStatus(EventStatus.APPROVED);
         eventRepository.save(event);
-        
+        // We could also notify the organizer here using eventNotifier
     }
 
     @Override
@@ -186,7 +186,8 @@ public class EventServiceImpl implements EventService {
     public Event registerUserForEvent(Long eventId, User user) {
         Event event = getEventById(eventId);
         
-        
+        // Re-fetch user from DB to ensure it's attached to the persistence context
+        // This avoids LazyInitializationException when accessing registeredEvents
         User attachedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -205,7 +206,7 @@ public class EventServiceImpl implements EventService {
     public Event unregisterUserFromEvent(Long eventId, User user) {
         Event event = getEventById(eventId);
         
-        
+        // Re-fetch user from DB to ensure it's attached to the persistence context
         User attachedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -227,13 +228,13 @@ public class EventServiceImpl implements EventService {
         return eventRepository.count();
     }
 
-    
+    // ---- Organizer-specific CRUD (ownership + PENDING status enforcement) ----
 
     @Override
     public Event updateOrganizerEvent(Long id, EventDTO eventDTO, User organizer) {
         Event event = getEventById(id);
 
-        
+        // Validate ownership
         if (!event.getCreatedBy().getId().equals(organizer.getId())) {
             throw new RuntimeException("You can only edit events you created.");
         }

@@ -10,6 +10,8 @@ public interface UserService {
     User createUser(UserDTO userDTO, Role role);
     User updateUser(Long id, UserDTO userDTO);
     void deleteUser(Long id);
+    void changeUserRole(Long id, Role role); // Change a user's role (e.g., USER to ORGANIZER)
+    void toggleUserStatus(Long id); // Activate or deactivate a user
     User getUserById(Long id);
     User getUserByUsername(String username);
     List<User> getAllUsers();
@@ -18,6 +20,7 @@ public interface UserService {
     boolean existsByEmail(String email);
     User registerForEvent(Long userId, Long eventId);
     User unregisterFromEvent(Long userId, Long eventId);
+    User updateProfile(Long userId, UserDTO userDTO);
     long getTotalUserCount();
     long getAdminCount();
     long getRegularUserCount();

@@ -8,18 +8,34 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * ========================================
+ * DESIGN PATTERN: Strategy Pattern (Concrete Strategy)
+ * ========================================
+ * Purpose: Searches events by matching the event date.
+ * How it works: Filters events where the date matches the search date string (format: yyyy-MM-dd).
+ */
 @Component
 public class SearchByDateStrategy implements EventSearchStrategy {
 
     @Override
     public List<Event> search(List<Event> events, String dateStr) {
-        LocalDate searchDate = LocalDate.parse(dateStr);
-        return events.stream()
-                .filter(event -> {
-                    LocalDateTime eventDate = event.getEventDate();
-                    return eventDate.toLocalDate().equals(searchDate);
-                })
-                .collect(Collectors.toList());
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            return List.of();
+        }
+
+        try {
+            LocalDate searchDate = LocalDate.parse(dateStr);
+            return events.stream()
+                    .filter(event -> {
+                        LocalDateTime eventDate = event.getEventDate();
+                        return eventDate != null && eventDate.toLocalDate().equals(searchDate);
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            // Return empty list if date format is invalid (e.g. text instead of yyyy-MM-dd)
+            return List.of();
+        }
     }
 
     @Override

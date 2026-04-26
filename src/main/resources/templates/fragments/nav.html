@@ -1,4 +1,4 @@
-<aside th:fragment="nav" class="sidebar">
+<aside th:fragment="nav" class="sidebar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="sidebar-header">
         <div class="brand-logo">📅</div>
         <div class="brand-text">EventHub</div>
@@ -42,7 +42,7 @@
             <li><a th:href="@{/user/events}" class="nav-item"><span>🔍</span> <span>Browse Events</span></a></li>
             <li><a th:href="@{/user/my-events}" class="nav-item"><span>⭐</span> <span>My Events</span></a></li>
         </ul>
-        
+
         <!-- Common Link -->
         <ul style="list-style: none;">
             <li><a th:href="@{/profile}" class="nav-item">
