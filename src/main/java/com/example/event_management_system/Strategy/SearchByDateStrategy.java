@@ -27,7 +27,8 @@ public class SearchByDateStrategy implements EventSearchStrategy {
                     })
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            
+        } catch (Exception e) {
+            // Return empty list if date format is invalid (e.g. text instead of yyyy-MM-dd)
             return List.of();
         }
     }
