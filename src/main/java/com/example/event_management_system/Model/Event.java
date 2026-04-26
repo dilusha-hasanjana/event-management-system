@@ -1,12 +1,19 @@
 package com.example.event_management_system.Model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "events")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,48 +47,22 @@ public class Event {
     @Column(nullable = false)
     private boolean isFeatured = false;
 
-    public Event() {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventStatus status; // Track if the event is pending, approved, or rejected
+
+    // Custom constructor initializes defaults
+    {
         this.createdAt = LocalDateTime.now();
+        this.status = EventStatus.PENDING; // New events start as PENDING
     }
 
     public Event(String title, String description, String location, LocalDateTime eventDate) {
-        this();
         this.title = title;
         this.description = description;
         this.location = location;
         this.eventDate = eventDate;
     }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public LocalDateTime getEventDate() { return eventDate; }
-    public void setEventDate(LocalDateTime eventDate) { this.eventDate = eventDate; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public User getCreatedBy() { return createdBy; }
-    public void setCreatedBy(User createdBy) { this.createdBy = createdBy; }
-
-    public Set<User> getAttendees() { return attendees; }
-    public void setAttendees(Set<User> attendees) { this.attendees = attendees; }
-
-    public boolean isPremium() { return isPremium; }
-    public void setPremium(boolean premium) { isPremium = premium; }
-
-    public boolean isFeatured() { return isFeatured; }
-    public void setFeatured(boolean featured) { isFeatured = featured; }
 
     public void addAttendee(User user) {
         this.attendees.add(user);

@@ -14,11 +14,16 @@ public interface EventService {
     List<Event> getAllEvents();
     List<Event> getUpcomingEvents();
     List<Event> getEventsByCreator(User user);
+    List<Event> getPendingEvents(); // Get all events waiting for approval
+    void approveEvent(Long id); // Change status to APPROVED
+    void rejectEvent(Long id); // Change status to REJECTED
     List<Event> searchEvents(String keyword, String strategy);
     Event registerUserForEvent(Long eventId, User user);
     Event unregisterUserFromEvent(Long eventId, User user);
     List<Event> getUserRegisteredEvents(User user);
-    List<Event> getPremiumEvents();
-    List<Event> getFeaturedEvents();
     long getTotalEventCount();
+
+    // Organizer-specific CRUD: Only allows modifications on own PENDING events
+    Event updateOrganizerEvent(Long id, EventDTO eventDTO, User organizer);
+    void deleteOrganizerEvent(Long id, User organizer);
 }
