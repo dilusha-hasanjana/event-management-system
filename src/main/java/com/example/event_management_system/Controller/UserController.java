@@ -48,8 +48,11 @@ public class UserController {
                                @RequestParam(required = false, defaultValue = "TITLE") String strategy,
                                Model model) {
         List<Event> searchResults = eventService.searchEvents(keyword, strategy);
+        List<Event> myEvents = eventService.getUserRegisteredEvents(user);
+        
         model.addAttribute("user", user);
         model.addAttribute("events", searchResults);
+        model.addAttribute("myEventIds", myEvents.stream().map(Event::getId).toList());
         model.addAttribute("searchKeyword", keyword);
         model.addAttribute("searchStrategy", strategy);
         return "user/view-events";

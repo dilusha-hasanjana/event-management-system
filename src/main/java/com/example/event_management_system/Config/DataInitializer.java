@@ -30,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
             adminDTO.setPassword("admin123");
             adminDTO.setFullName("System Administrator");
 
-            User admin = userService.createUser(adminDTO, Role.ADMIN);
+            userService.createUser(adminDTO, Role.ADMIN);
             log.info("Admin user created: admin / admin123");
         }
 
@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
             userDTO.setPassword("user123");
             userDTO.setFullName("John Doe");
 
-            User user = userService.createUser(userDTO, Role.USER);
+            userService.createUser(userDTO, Role.USER);
             log.info("Sample user created: user / user123");
         }
 
