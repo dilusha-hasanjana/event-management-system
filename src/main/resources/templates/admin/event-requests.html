@@ -3,62 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Requests - Faculty Event Management</title>
+
+    <title>Event Requests - EventHub</title>
+
+   
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
-<div th:replace="~{fragments/nav :: nav}"></div>
 
-<div class="container">
-    <div class="header-row">
-        <h1>Pending Event Requests</h1>
-    </div>
+<div class="app-wrapper">
+    <div th:replace="~{fragments/nav :: nav}"></div>
 
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <main class="main-content">
+        <div th:replace="~{fragments/header :: header(pageTitle='Review Requests')}"></div>
 
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th>Title</th>
-                <th>Organizer</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="event : ${events}">
-                <td th:text="${event.title}"></td>
-                <td th:text="${event.createdBy.fullName}"></td>
-                <td th:text="${#temporals.format(event.eventDate, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${event.location}"></td>
-                <td class="actions">
-                    <!-- Approve Button -->
-                    <form th:action="@{/admin/events/approve/{id}(id=${event.id})}" method="post" class="inline-form">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-sm btn-success">Approve</button>
-                    </form>
-                    
-                    <!-- Reject Button -->
-                    <form th:action="@{/admin/events/reject/{id}(id=${event.id})}" method="post" class="inline-form">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-sm btn-danger" 
-                                onclick="return confirm('Are you sure you want to reject this request?')">Reject</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(events)}">
-                <td colspan="5" class="text-center">No pending requests at the moment.</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        <div class="top-bar animate-up">
+            <h1 style="margin: 0;">Pending Requests</h1>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success animate-up" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger animate-up" th:text="${errorMessage}"></div>
+
+        <div class="table-wrapper animate-up" style="animation-delay: 0.1s;">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>Event Information</th>
+                    <th>Organizer</th>
+                    <th>Requested Date</th>
+                    <th>Location</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="event : ${events}">
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-main);" th:text="${event.title}">Title</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="'ID: #' + ${event.id}">ID</div>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="avatar" style="width: 32px; height: 32px; font-size: 0.8rem;" th:text="${#strings.substring(event.createdBy.fullName, 0, 1)}">O</div>
+                            <div th:text="${event.createdBy.fullName}">Organizer</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:text="${#temporals.format(event.eventDate, 'MMM dd, yyyy')}">Date</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);" th:text="${#temporals.format(event.eventDate, 'HH:mm')}">Time</div>
+                    </td>
+                    <td th:text="${event.location}">Location</td>
+                    <td>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <form th:action="@{/admin/events/approve/{id}(id=${event.id})}" method="post">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-primary btn-sm" style="background: var(--success); border: none;">
+                                    <span></span> Approve
+                                </button>
+                            </form>
+                            
+                            <form th:action="@{/admin/events/reject/{id}(id=${event.id})}" method="post" 
+                                  onsubmit="return confirm('Are you sure you want to reject this request?')">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--danger); border-color: var(--danger-soft);">
+                                    <span></span> Reject
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(events)}">
+                    <td colspan="5" style="text-align: center; padding: 4rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">☕</div>
+                        <div style="color: var(--text-muted); font-size: 1.1rem;">All caught up! No pending requests to review.</div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </main>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

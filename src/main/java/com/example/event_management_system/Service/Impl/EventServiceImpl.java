@@ -88,7 +88,7 @@ public class EventServiceImpl implements EventService {
             );
         }
 
-        // If an ADMIN creates the event, it is APPROVED immediately
+        
         if (createdBy.getRole() == Role.ADMIN) {
             event.setStatus(EventStatus.APPROVED);
         }
@@ -136,7 +136,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getUpcomingEvents() {
-        // Only show events that are APPROVED and in the future
+    
         return eventRepository.findByEventDateAfterAndStatusOrderByEventDateAsc(
                 java.time.LocalDateTime.now(),
                 EventStatus.APPROVED
@@ -145,7 +145,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getPendingEvents() {
-        // Get all events that are waiting for admin approval
+        
         return eventRepository.findByStatus(EventStatus.PENDING);
     }
 
@@ -154,7 +154,7 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(id);
         event.setStatus(EventStatus.APPROVED);
         eventRepository.save(event);
-        // We could also notify the organizer here using eventNotifier
+        
     }
 
     @Override
@@ -171,22 +171,22 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> searchEvents(String keyword, String strategyType) {
-        List<Event> allEvents = getAllEvents();
+        
+        List<Event> searchPool = eventRepository.findByStatus(EventStatus.APPROVED);
 
         EventSearchStrategy strategy = searchStrategies.getOrDefault(
                 strategyType != null ? strategyType.toUpperCase() : "TITLE",
                 searchStrategies.get("TITLE")
         );
 
-        return strategy.search(allEvents, keyword);
+        return strategy.search(searchPool, keyword);
     }
 
     @Override
     public Event registerUserForEvent(Long eventId, User user) {
         Event event = getEventById(eventId);
         
-        // Re-fetch user from DB to ensure it's attached to the persistence context
-        // This avoids LazyInitializationException when accessing registeredEvents
+        
         User attachedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -205,7 +205,7 @@ public class EventServiceImpl implements EventService {
     public Event unregisterUserFromEvent(Long eventId, User user) {
         Event event = getEventById(eventId);
         
-        // Re-fetch user from DB to ensure it's attached to the persistence context
+        
         User attachedUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -225,5 +225,52 @@ public class EventServiceImpl implements EventService {
     @Override
     public long getTotalEventCount() {
         return eventRepository.count();
+    }
+
+    
+
+    @Override
+    public Event updateOrganizerEvent(Long id, EventDTO eventDTO, User organizer) {
+        Event event = getEventById(id);
+
+        
+        if (!event.getCreatedBy().getId().equals(organizer.getId())) {
+            throw new RuntimeException("You can only edit events you created.");
+        }
+
+        // Validate status
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new RuntimeException("Only PENDING events can be edited. This event is " + event.getStatus() + ".");
+        }
+
+        event.setTitle(eventDTO.getTitle());
+        event.setDescription(eventDTO.getDescription());
+        event.setLocation(eventDTO.getLocation());
+        event.setEventDate(eventDTO.getEventDate());
+
+        Event updatedEvent = eventRepository.save(event);
+        eventNotifier.eventUpdated(updatedEvent);
+        log.info("Organizer '{}' updated PENDING event: {}", organizer.getUsername(), event.getTitle());
+
+        return updatedEvent;
+    }
+
+    @Override
+    public void deleteOrganizerEvent(Long id, User organizer) {
+        Event event = getEventById(id);
+
+        // Validate ownership
+        if (!event.getCreatedBy().getId().equals(organizer.getId())) {
+            throw new RuntimeException("You can only delete events you created.");
+        }
+
+        // Validate status
+        if (event.getStatus() != EventStatus.PENDING) {
+            throw new RuntimeException("Only PENDING events can be deleted. This event is " + event.getStatus() + ".");
+        }
+
+        eventRepository.delete(event);
+        eventNotifier.eventDeleted(event);
+        log.info("Organizer '{}' deleted PENDING event: {}", organizer.getUsername(), event.getTitle());
     }
 }
