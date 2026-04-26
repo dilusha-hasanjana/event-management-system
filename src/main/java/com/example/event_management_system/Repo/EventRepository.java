@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+   
     List<Event> findByCreatedBy(User createdBy);
     
     // Find all events with a specific status (PENDING, APPROVED, etc.)
@@ -29,6 +30,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Event> searchByTitle(@Param("keyword") String keyword);
 
+    // Search events by location
     @Query("SELECT e FROM Event e WHERE LOWER(e.location) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Event> searchByLocation(@Param("keyword") String keyword);
 
