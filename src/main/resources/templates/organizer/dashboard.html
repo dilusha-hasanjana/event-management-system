@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard - Faculty Event Management</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}"> <!-- Reusing admin styles for layout -->
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/nav :: nav}"></div>
+
+<div class="container">
+    <h1>Organizer Dashboard</h1>
+    <p>Welcome, <span th:text="${user.fullName}">Organizer</span>! Manage your event requests here.</p>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <div class="header-row">
+        <h3>My Event Requests</h3>
+        <a th:href="@{/organizer/events/new}" class="btn btn-primary">➕ Request New Event</a>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Created At</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}">
+                <td th:text="${event.title}"></td>
+                <td th:text="${#temporals.format(event.eventDate, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${event.location}"></td>
+                <td>
+                    <!-- Color the status badge based on whether it is PENDING, APPROVED, or REJECTED -->
+                    <span th:class="'badge status-' + ${event.status.name().toLowerCase()}" 
+                          th:text="${event.status}"></span>
+                </td>
+                <td th:text="${#temporals.format(event.createdAt, 'yyyy-MM-dd')}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(events)}">
+                <td colspan="5" class="text-center">You haven't submitted any event requests yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
