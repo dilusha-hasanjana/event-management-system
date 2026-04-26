@@ -3,105 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Event - Faculty Event Management</title>
+    <title>Add New Event - EventHub</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
-<div th:replace="~{fragments/nav :: nav}"></div>
+<div class="app-wrapper">
+    <div th:replace="~{fragments/nav :: nav}"></div>
+    
+    <main class="main-content">
+        <div th:replace="~{fragments/header :: header(pageTitle='Add New Event')}"></div>
 
-<div class="container">
-    <div class="form-container">
-        <h2>Add New Event</h2>
+        <div class="card animate-up" style="max-width: 800px; margin: 0 auto; width: 100%;">
+            <div style="border-bottom: 1px solid var(--border); margin-bottom: 2rem; padding-bottom: 1rem;">
+                <h2 style="margin: 0;">Create Event</h2>
+                <p style="color: var(--text-muted); font-size: 0.875rem;">Fill in the details below to create a new event.</p>
+            </div>
 
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
-            <ul>
-                <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
-            </ul>
+            <form th:action="@{/admin/events/add}" th:object="${event}" method="post">
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <ul style="margin-left: 1.5rem; margin-bottom: 0;">
+                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                    </ul>
+                </div>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <div class="form-group">
+                    <label class="label" for="id">Event ID</label>
+                    <input type="text" id="id" th:field="*{id}" class="input" readonly placeholder="Auto-generated" style="opacity: 0.7; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="title">Title <span style="color: var(--danger);">*</span></label>
+                    <input type="text" id="title" th:field="*{title}" class="input" th:errorclass="field-error" required>
+                    <div th:if="${#fields.hasErrors('title')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{title}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="description">Description <span style="color: var(--danger);">*</span></label>
+                    <textarea id="description" th:field="*{description}" class="input" th:errorclass="field-error" rows="4" required></textarea>
+                    <div th:if="${#fields.hasErrors('description')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{description}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="label" for="location">Location <span style="color: var(--danger);">*</span></label>
+                    <input type="text" id="location" th:field="*{location}" class="input" th:errorclass="field-error" required>
+                    <div th:if="${#fields.hasErrors('location')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{location}"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="label" for="date">Date <span style="color: var(--danger);">*</span></label>
+                        <input type="date" id="date" th:field="*{date}" class="input" th:errorclass="field-error" required>
+                        <div th:if="${#fields.hasErrors('date')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{date}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label" for="time">Time <span style="color: var(--danger);">*</span></label>
+                        <input type="time" id="time" th:field="*{time}" class="input" th:errorclass="field-error" required>
+                        <div th:if="${#fields.hasErrors('time')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{time}"></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: flex; gap: 2rem; margin-top: 1rem; padding: 1rem; background: var(--surface-hover); border-radius: var(--radius-md);">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" th:field="*{premium}"> 
+                        <span style="font-weight: 500;">Premium Event</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" th:field="*{featured}"> 
+                        <span style="font-weight: 500;">Featured Event</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                    <a th:href="@{/admin/events}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
         </div>
 
-        <form th:action="@{/api/v1/admin/events/addevent}" th:object="${event}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-            <div class="form-group">
-                <div class="form-row">
-                    <div class="form-label">
-                        <label for="id">ID:</label>
-                    </div>
-                    <div class="form-input">
-                        <input type="text" id="id" th:field="*{id}" class="form-control" readonly placeholder="Auto-generated">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">
-                        <label for="title">Title: <span class="required">*</span></label>
-                    </div>
-                    <div class="form-input">
-                        <input type="text" id="title" th:field="*{title}" class="form-control" th:errorclass="field-error" required>
-                        <div th:if="${#fields.hasErrors('title')}" class="error-message" th:errors="*{title}"></div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">
-                        <label for="description">Description: <span class="required">*</span></label>
-                    </div>
-                    <div class="form-input">
-                        <textarea id="description" th:field="*{description}" class="form-control" th:errorclass="field-error" rows="4" required></textarea>
-                        <div th:if="${#fields.hasErrors('description')}" class="error-message" th:errors="*{description}"></div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">
-                        <label for="location">Location: <span class="required">*</span></label>
-                    </div>
-                    <div class="form-input">
-                        <input type="text" id="location" th:field="*{location}" class="form-control" th:errorclass="field-error" required>
-                        <div th:if="${#fields.hasErrors('location')}" class="error-message" th:errors="*{location}"></div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">
-                        <label for="eventDate">Date: <span class="required">*</span></label>
-                    </div>
-                    <div class="form-input">
-                        <input type="datetime-local" id="eventDate" th:field="*{eventDate}" class="form-control" th:errorclass="field-error" required>
-                        <div th:if="${#fields.hasErrors('eventDate')}" class="error-message" th:errors="*{eventDate}"></div>
-                    </div>
-                </div>
-
-                <div class="form-row checkbox-row">
-                    <div class="form-label"></div>
-                    <div class="form-input checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" th:field="*{premium}"> Premium Event
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" th:field="*{featured}"> Featured Event
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label"></div>
-                    <div class="form-input">
-                        <button type="submit" class="btn btn-primary">Add Event</button>
-                        <a th:href="@{/admin/events}" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </main>
 </div>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/validation.js}"></script>
 </body>
 </html>
