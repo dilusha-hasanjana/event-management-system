@@ -3,7 +3,6 @@ package com.example.event_management_system.Controller;
 import com.example.event_management_system.Dto.EventDTO;
 import com.example.event_management_system.Dto.UserDTO;
 import com.example.event_management_system.Model.Event;
-import com.example.event_management_system.Model.EventStatus;
 import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.EventService;
@@ -28,7 +27,8 @@ public class AdminController {
     private final UserService userService;
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
         model.addAttribute("totalEvents", eventService.getTotalEventCount());
         model.addAttribute("totalUsers", userService.getTotalUserCount());
         model.addAttribute("adminCount", userService.getAdminCount());
@@ -38,7 +38,8 @@ public class AdminController {
     }
 
     @GetMapping("/events/get")
-    public String showAddEventForm(Model model) {
+    public String showAddEventForm(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
         model.addAttribute("event", new EventDTO());
         return "admin/add-event";
     }
@@ -49,11 +50,17 @@ public class AdminController {
                            @AuthenticationPrincipal User user,
                            RedirectAttributes redirectAttributes,
                            Model model) {
+        model.addAttribute("user", user);
         if (result.hasErrors()) {
             return "admin/add-event";
         }
 
         try {
+            // Combine date and time into eventDate
+            if (eventDTO.getDate() != null && eventDTO.getTime() != null) {
+                eventDTO.setEventDate(java.time.LocalDateTime.of(eventDTO.getDate(), eventDTO.getTime()));
+            }
+            
             eventService.createEvent(eventDTO, user);
             redirectAttributes.addFlashAttribute("successMessage", "Event created successfully!");
             return "redirect:/admin/events/get";
@@ -64,8 +71,9 @@ public class AdminController {
     }
 
     @GetMapping("/events")
-    public String listEvents(Model model) {
+    public String listEvents(@AuthenticationPrincipal User user, Model model) {
         List<Event> events = eventService.getAllEvents();
+        model.addAttribute("user", user);
         model.addAttribute("events", events);
         return "admin/manage-events";
     }
@@ -91,6 +99,11 @@ public class AdminController {
         }
 
         try {
+            // Combine date and time into eventDate
+            if (eventDTO.getDate() != null && eventDTO.getTime() != null) {
+                eventDTO.setEventDate(java.time.LocalDateTime.of(eventDTO.getDate(), eventDTO.getTime()));
+            }
+            
             eventService.updateEvent(id, eventDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Event updated successfully!");
             return "redirect:/admin/events";
@@ -112,15 +125,16 @@ public class AdminController {
         return "redirect:/admin/events";
     }
 
-    // List all event requests that are waiting for approval
+    
     @GetMapping("/events/requests")
-    public String listPendingRequests(Model model) {
+    public String listPendingRequests(@AuthenticationPrincipal User user, Model model) {
         List<Event> pendingEvents = eventService.getPendingEvents();
+        model.addAttribute("user", user);
         model.addAttribute("events", pendingEvents);
         return "admin/event-requests";
     }
 
-    // Approve an event request
+    
     @PostMapping("/events/approve/{id}")
     public String approveEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -132,7 +146,7 @@ public class AdminController {
         return "redirect:/admin/events/requests";
     }
 
-    // Reject an event request
+    
     @PostMapping("/events/reject/{id}")
     public String rejectEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -145,8 +159,9 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String manageUsers(Model model) {
+    public String manageUsers(@AuthenticationPrincipal User user, Model model) {
         List<User> users = userService.getAllUsers();
+        model.addAttribute("user", user);
         model.addAttribute("users", users);
         return "admin/manage-users";
     }
@@ -154,7 +169,7 @@ public class AdminController {
     @PostMapping("/users/toggle/{id}")
     public String toggleUserStatus(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            // Use the new safe method that only touches the 'active' field
+        
             userService.toggleUserStatus(id);
             
             User user = userService.getUserById(id);
@@ -223,7 +238,13 @@ public class AdminController {
         dto.setTitle(event.getTitle());
         dto.setDescription(event.getDescription());
         dto.setLocation(event.getLocation());
-        dto.setEventDate(event.getEventDate());
+        
+        if (event.getEventDate() != null) {
+            dto.setEventDate(event.getEventDate());
+            dto.setDate(event.getEventDate().toLocalDate());
+            dto.setTime(event.getEventDate().toLocalTime());
+        }
+        
         dto.setPremium(event.isPremium());
         dto.setFeatured(event.isFeatured());
         return dto;
