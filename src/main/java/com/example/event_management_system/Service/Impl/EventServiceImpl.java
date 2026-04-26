@@ -171,14 +171,15 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> searchEvents(String keyword, String strategyType) {
-        List<Event> allEvents = getAllEvents();
+        
+        List<Event> searchPool = eventRepository.findByStatus(EventStatus.APPROVED);
 
         EventSearchStrategy strategy = searchStrategies.getOrDefault(
                 strategyType != null ? strategyType.toUpperCase() : "TITLE",
                 searchStrategies.get("TITLE")
         );
 
-        return strategy.search(allEvents, keyword);
+        return strategy.search(searchPool, keyword);
     }
 
     @Override

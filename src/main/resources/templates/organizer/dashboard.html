@@ -3,50 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizer Dashboard - Faculty Event Management</title>
+    <title>Organizer Dashboard - EventHub</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
-<div th:replace="~{fragments/nav :: nav}"></div>
-
-<div class="container">
-    <div th:replace="~{fragments/identity :: identity-card}"></div>
-
-    <!-- Stats Overview -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">📋</div>
-            <div class="stat-value" th:text="${totalEvents}">0</div>
-            <div class="stat-label">Total Requests</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">⏳</div>
-            <div class="stat-value" th:text="${pendingEvents}">0</div>
-            <div class="stat-label">Pending</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">✅</div>
-            <div class="stat-value" th:text="${approvedEvents}">0</div>
-            <div class="stat-label">Approved</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">❌</div>
-            <div class="stat-value" th:text="${rejectedEvents}">0</div>
-            <div class="stat-label">Rejected</div>
-        </div>
-    </div>
+<div class="app-wrapper">
+    <div th:replace="~{fragments/nav :: nav}"></div>
     
-    <div class="quick-actions" style="margin-top: 2rem;">
-        <h3>Quick Actions</h3>
-        <div class="action-buttons">
-            <a th:href="@{/organizer/events}" class="btn btn-secondary">📋 Manage Request Events</a>
-            <a th:href="@{/organizer/events/new}" class="btn btn-primary">➕ Request New Event</a>
-        </div>
-    </div>
-</div>
+    <main class="main-content">
+        <div th:replace="~{fragments/header :: header(pageTitle='Organizer Dashboard')}"></div>
+        <div th:replace="~{fragments/identity :: identity-card}"></div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+        <!-- Stats Overview -->
+        <div class="stats-grid animate-up" style="animation-delay: 0.1s;">
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--info-soft); color: var(--info);">📋</div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-value" th:text="${totalEvents}">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--warning-soft); color: var(--warning);">⏳</div>
+                <div class="stat-info">
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value" th:text="${pendingEvents}">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--success-soft); color: var(--success);">✅</div>
+                <div class="stat-info">
+                    <div class="stat-label">Approved</div>
+                    <div class="stat-value" th:text="${approvedEvents}">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--danger-soft); color: var(--danger);">❌</div>
+                <div class="stat-info">
+                    <div class="stat-label">Rejected</div>
+                    <div class="stat-value" th:text="${rejectedEvents}">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card animate-up" style="animation-delay: 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0;">Quick Actions</h3>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a th:href="@{/organizer/events}" class="btn btn-secondary">
+                    <span>📋</span> Manage Request Events
+                </a>
+                <a th:href="@{/organizer/events/new}" class="btn btn-primary">
+                    <span>➕</span> Request New Event
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </main>
+</div>
 </body>
 </html>

@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head></head>
-<body>
-<header th:fragment="header" class="main-header">
-    <div class="header-content">
-        <div class="logo">
-            <h1>📚 Faculty Events</h1>
-        </div>
-        <div class="user-info" th:if="${#authentication.principal != null}">
-            <span>Welcome, <strong th:text="${#authentication.principal.fullName}">User</strong></span>
-            <span class="role-badge" th:text="${#authentication.principal.role}">ROLE</span>
+<div th:fragment="header" class="top-bar">
+    <div class="top-bar-left">
+        <h2 th:text="${pageTitle != null ? pageTitle : 'Dashboard'}">Dashboard</h2>
+    </div>
+    <div class="top-bar-right" th:if="${#authentication.principal != null}">
+        <div class="profile-mini">
+            <div class="avatar" th:text="${#strings.substring(#authentication.principal.fullName, 0, 1)}">U</div>
+            <div class="profile-info">
+                <div style="font-weight: 600; font-size: 0.875rem;" th:text="${#authentication.principal.fullName}">Full Name</div>
+                <div class="badge badge-primary" style="font-size: 0.65rem;" th:text="${#authentication.principal.role}">ROLE</div>
+            </div>
         </div>
     </div>
-</header>
-</body>
-</html>
+</div>

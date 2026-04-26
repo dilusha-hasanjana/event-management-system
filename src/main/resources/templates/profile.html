@@ -3,149 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - Faculty Event Management</title>
+    <title>My Profile - EventHub</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
-<div th:replace="~{fragments/nav :: nav}"></div>
+<div class="app-wrapper">
+    <div th:replace="~{fragments/nav :: nav}"></div>
 
-<div class="container">
-    <div class="dashboard-header">
-        <div>
-            <h1>My Profile</h1>
-            <p class="subtitle">Manage your personal information and account security</p>
-        </div>
-        <div class="badges">
-            <span th:class="'badge badge-' + ${rawUser.role.name().toLowerCase()}" th:text="${rawUser.role}">Role</span>
-            <span class="badge badge-active">Account Active</span>
-        </div>
-    </div>
+    <main class="main-content">
+        <div th:replace="~{fragments/header :: header(pageTitle='Account Settings')}"></div>
 
-    <div class="details-layout">
-        <!-- Sidebar: Stats & Achievements -->
-        <div class="detail-sidebar">
-            <div class="info-card achievement-card">
-                <h3>System Impact</h3>
-                
-                <!-- Organizer Stats -->
-                <div th:if="${rawUser.role.name() == 'ORGANIZER'}" class="achievement-grid">
-                    <div class="achievement-item">
-                        <span class="achievement-value" th:text="${totalProposed}">0</span>
-                        <span class="achievement-label">Events Proposed</span>
+        <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem;" class="animate-up">
+            <!-- Profile Sidebar -->
+            <aside>
+                <div class="card" style="text-align: center; padding: 3rem 2rem;">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; margin: 0 auto 1.5rem; border: 4px solid white; box-shadow: var(--shadow);">
+                        <span th:text="${rawUser.fullName != null && !rawUser.fullName.isEmpty() ? #strings.substring(rawUser.fullName, 0, 1) : 'U'}">U</span>
                     </div>
-                    <div class="achievement-item">
-                        <span class="achievement-value" th:text="${totalApproved}">0</span>
-                        <span class="achievement-label">Events Approved</span>
-                    </div>
-                </div>
-
-                <!-- Student Stats -->
-                <div th:if="${rawUser.role.name() == 'USER'}" class="achievement-grid">
-                    <div class="achievement-item">
-                        <span class="achievement-value" th:text="${totalRegistered}">0</span>
-                        <span class="achievement-label">Events Registered</span>
-                    </div>
-                </div>
-
-                <!-- Admin Stats (Generic) -->
-                <div th:if="${rawUser.role.name() == 'ADMIN'}" class="achievement-grid">
-                    <div class="achievement-item">
-                        <span class="achievement-value">Full Access</span>
-                        <span class="achievement-label">System Administrator</span>
-                    </div>
-                </div>
-
-                <div class="info-item" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                    <span class="info-label">Member Since</span>
-                    <span class="info-value" th:text="${#temporals.format(rawUser.createdAt, 'MMMM dd, yyyy')}">Date</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content: Edit Form -->
-        <div class="detail-main">
-            <div class="content-section">
-                <div class="section-header">
-                    <h3>Account Settings</h3>
-                </div>
-
-                <div th:if="${successMessage}" class="alert alert-success animate-fade-in" th:text="${successMessage}"></div>
-                <div th:if="${errorMessage}" class="alert alert-danger animate-fade-in" th:text="${errorMessage}"></div>
-
-                <form th:action="@{/profile/update}" th:object="${user}" method="post">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <h2 th:text="${rawUser.fullName}" style="margin-bottom: 0.5rem;">Full Name</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;" th:text="'@' + ${rawUser.username}">username</p>
                     
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="username">Username (Read-only)</label>
-                            <input type="text" id="username" th:field="*{username}" class="form-control" readonly style="background: var(--light-bg); cursor: not-allowed;">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="fullName">Full Name <span class="required">*</span></label>
-                            <input type="text" id="fullName" th:field="*{fullName}" class="form-control" th:errorclass="field-error" required>
-                            <div th:if="${#fields.hasErrors('fullName')}" class="error-message" th:errors="*{fullName}"></div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="email">Email Address <span class="required">*</span></label>
-                            <input type="email" id="email" th:field="*{email}" class="form-control" th:errorclass="field-error" required>
-                            <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
-                        </div>
-
-                        <div class="form-group full-width" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--light-bg);">
-                            <label for="password">Change Password</label>
-                            <input type="password" id="password" th:field="*{password}" class="form-control" th:errorclass="field-error" placeholder="Leave blank to keep current password">
-                            <small class="subtitle" style="font-size: 0.75rem;">Minimum 6 characters if updating</small>
-                            <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
-                        </div>
+                    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem;">
+                        <span th:class="'badge badge-' + ${rawUser.role.name().toLowerCase()}" th:text="${rawUser.role}">Role</span>
+                        <span class="badge badge-success">Active</span>
                     </div>
 
-                    <div class="footer-actions">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <div style="text-align: left; background: var(--background); padding: 1.5rem; border-radius: var(--radius-md);">
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Activity Summary</div>
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                                <div th:if="${rawUser.role.name() == 'USER'}">
+                                    <span style="font-weight: 700; color: var(--primary);" th:text="${totalRegistered}">0</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Events Registered</span>
+                                </div>
+                                <div th:if="${rawUser.role.name() == 'ORGANIZER'}">
+                                    <span style="font-weight: 700; color: var(--primary);" th:text="${totalApproved}">0</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Hosted</span>
+                                </div>
+                                <div th:if="${rawUser.role.name() == 'ORGANIZER'}">
+                                    <span style="font-weight: 700; color: var(--primary);" th:text="${totalProposed}">0</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Proposed</span>
+                                </div>
+                                <div th:if="${rawUser.role.name() == 'ADMIN'}">
+                                    <span style="font-weight: 700; color: var(--primary);">Full Access</span>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">Administrator</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+                            Member since <span th:text="${#temporals.format(rawUser.createdAt, 'MMMM dd, yyyy')}">Date</span>
+                        </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </aside>
+
+            <!-- Profile Form -->
+            <section>
+                <div class="card">
+                    <h3 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">Update Personal Information</h3>
+                    
+                    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                    <form th:action="@{/profile/update}" th:object="${user}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div class="form-group">
+                                <label class="label">Username (Permanent)</label>
+                                <input type="text" th:field="*{username}" class="input" readonly style="opacity: 0.6; cursor: not-allowed;">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="label">Full Name</label>
+                                <input type="text" th:field="*{fullName}" class="input" required>
+                                <div th:if="${#fields.hasErrors('fullName')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{fullName}"></div>
+                            </div>
+
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label class="label">Email Address</label>
+                                <input type="email" th:field="*{email}" class="input" required>
+                                <div th:if="${#fields.hasErrors('email')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{email}"></div>
+                            </div>
+
+                            <div style="grid-column: span 2; margin: 1.5rem 0; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                                <h4 style="margin-bottom: 1rem;">Security Settings</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                    <div class="form-group">
+                                        <label class="label">New Password</label>
+                                        <input type="password" th:field="*{password}" class="input" placeholder="Leave blank to keep current">
+                                        <div th:if="${#fields.hasErrors('password')}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:errors="*{password}"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label">Confirm New Password</label>
+                                        <input type="password" th:field="*{confirmPassword}" class="input" placeholder="Repeat new password">
+                                        <div th:if="${passwordError}" style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem;" th:text="${passwordError}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
         </div>
-    </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </main>
 </div>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
-
-<style>
-    .achievement-card {
-        background: linear-gradient(135deg, white, var(--light-bg));
-        border-left: 4px solid var(--primary-color);
-    }
-    .achievement-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-    .achievement-item {
-        background: white;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        text-align: center;
-    }
-    .achievement-value {
-        display: block;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-    .achievement-label {
-        font-size: 0.75rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-    }
-</style>
 </body>
 </html>

@@ -65,6 +65,16 @@ public class ProfileController {
             return "profile";
         }
 
+        // Check if passwords match (if a new password is being set)
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+                model.addAttribute("passwordError", "Passwords do not match!");
+                User currentUser = userService.getUserById(user.getId());
+                model.addAttribute("rawUser", currentUser);
+                return "profile";
+            }
+        }
+
         try {
             userService.updateProfile(user.getId(), userDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully!");

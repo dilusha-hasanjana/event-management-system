@@ -92,6 +92,11 @@ public class OrganizerController {
         }
 
         try {
+            // Combine date and time into eventDate
+            if (eventDTO.getDate() != null && eventDTO.getTime() != null) {
+                eventDTO.setEventDate(java.time.LocalDateTime.of(eventDTO.getDate(), eventDTO.getTime()));
+            }
+            
             // Create the event (it will be PENDING by default in the service logic)
             eventService.createEvent(eventDTO, user);
             redirectAttributes.addFlashAttribute("successMessage", "Event request submitted successfully! Waiting for admin approval.");
@@ -147,6 +152,11 @@ public class OrganizerController {
         }
 
         try {
+            // Combine date and time into eventDate
+            if (eventDTO.getDate() != null && eventDTO.getTime() != null) {
+                eventDTO.setEventDate(java.time.LocalDateTime.of(eventDTO.getDate(), eventDTO.getTime()));
+            }
+            
             eventService.updateOrganizerEvent(id, eventDTO, user);
             redirectAttributes.addFlashAttribute("successMessage", "Event updated successfully!");
             return "redirect:/organizer/dashboard";
@@ -178,7 +188,13 @@ public class OrganizerController {
         dto.setTitle(event.getTitle());
         dto.setDescription(event.getDescription());
         dto.setLocation(event.getLocation());
-        dto.setEventDate(event.getEventDate());
+        
+        if (event.getEventDate() != null) {
+            dto.setEventDate(event.getEventDate());
+            dto.setDate(event.getEventDate().toLocalDate());
+            dto.setTime(event.getEventDate().toLocalTime());
+        }
+        
         dto.setPremium(event.isPremium());
         dto.setFeatured(event.isFeatured());
         return dto;
