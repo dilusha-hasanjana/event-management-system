@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head></head>
-<body>
-<footer th:fragment="footer" class="main-footer">
-    <div class="footer-content">
-        <p>&copy; 2026 Faculty Event Management System. All rights reserved.</p>
+<footer th:fragment="footer" style="margin-top: auto; padding: 2rem 0; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.875rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <p>&copy; 2026 EventHub Management. All rights reserved.</p>
+        <div style="display: flex; gap: 1.5rem;">
+            <a href="#" style="color: var(--text-muted);">Privacy Policy</a>
+            <a href="#" style="color: var(--text-muted);">Terms of Service</a>
+        </div>
     </div>
-    <!-- Global JavaScript for handling alerts -->
+    <!-- Global JavaScript for handling alerts and validation -->
     <script th:src="@{/js/alerts.js}"></script>
+    <script th:src="@{/js/validation.js}"></script>
 </footer>
-</body>
-</html>

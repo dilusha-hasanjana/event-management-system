@@ -7,15 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ========================================
- * DESIGN PATTERN: Observer Pattern (Subject/Notifier)
- * ========================================
- * Purpose: Manages a list of observers and notifies them when event actions happen.
- * How it works: Spring injects all EventObserver beans, then notifies them automatically.
- * Why we use it: When an event is created/updated/deleted, all observers are notified
- *                without the service needing to know about each observer directly.
- */
+
 @Component
 public class EventNotifier {
     // List of all registered observers

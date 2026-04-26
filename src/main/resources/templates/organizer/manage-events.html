@@ -3,74 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Request Events - Faculty Event Management</title>
+    <title>Manage Request Events - EventHub</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
-<div th:replace="~{fragments/nav :: nav}"></div>
+<div class="app-wrapper">
+    <div th:replace="~{fragments/nav :: nav}"></div>
+    
+    <main class="main-content">
+        <div th:replace="~{fragments/header :: header(pageTitle='My Event Requests')}"></div>
 
-<div class="container">
-    <div class="header-row">
-        <h1>Manage Request Events</h1>
-        <a th:href="@{/organizer/events/new}" class="btn btn-primary">➕ Request New Event</a>
-    </div>
+        <div class="card animate-up" style="animation-delay: 0.1s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h3 style="margin: 0;">Event Proposals</h3>
+                <a th:href="@{/organizer/events/new}" class="btn btn-primary">
+                    <span>➕</span> Request New Event
+                </a>
+            </div>
 
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="event : ${events}">
-                <td th:text="${event.id}"></td>
-                <td th:text="${event.title}"></td>
-                <td th:text="${#temporals.format(event.eventDate, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${event.location}"></td>
-                <td>
-                    <span th:class="'badge status-' + ${event.status.name().toLowerCase()}" 
-                          th:text="${event.status}"></span>
-                </td>
-                <td th:text="${#temporals.format(event.createdAt, 'yyyy-MM-dd')}"></td>
-                <td class="actions">
-                    <!-- View: always available -->
-                    <a th:href="@{/organizer/events/view/{id}(id=${event.id})}" class="btn btn-sm btn-info">View</a>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date & Time</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="event : ${events}">
+                        <td style="font-weight: 500;" th:text="${event.title}"></td>
+                        <td th:text="${#temporals.format(event.eventDate, 'MMM dd, yyyy HH:mm')}"></td>
+                        <td th:text="${event.location}"></td>
+                        <td>
+                            <span th:class="'badge badge-' + (${event.status.name() == 'APPROVED' ? 'success' : (event.status.name() == 'REJECTED' ? 'danger' : 'warning')})" th:text="${event.status}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(event.createdAt, 'MMM dd, yyyy')}"></td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <a th:href="@{/organizer/events/view/{id}(id=${event.id})}" class="btn btn-secondary btn-sm" title="View Details">👁️</a>
 
-                    <!-- Edit: only for PENDING events -->
-                    <a th:if="${event.status.name() == 'PENDING'}"
-                       th:href="@{/organizer/events/edit/{id}(id=${event.id})}" 
-                       class="btn btn-sm btn-warning">Edit</a>
+                                <a th:if="${event.status.name() == 'PENDING'}"
+                                   th:href="@{/organizer/events/edit/{id}(id=${event.id})}" 
+                                   class="btn btn-secondary btn-sm" title="Edit">✏️</a>
 
-                    <!-- Delete: only for PENDING events -->
-                    <form th:if="${event.status.name() == 'PENDING'}"
-                          th:action="@{/organizer/events/delete/{id}(id=${event.id})}" 
-                          method="post" class="inline-form"
-                          onsubmit="return confirm('Are you sure you want to delete this event request?');">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(events)}">
-                <td colspan="7" class="text-center">No events found. Click "Request New Event" to create your first event.</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+                                <form th:if="${event.status.name() == 'PENDING'}"
+                                      th:action="@{/organizer/events/delete/{id}(id=${event.id})}" 
+                                      method="post" style="display: inline;"
+                                      onsubmit="return confirm('Are you sure you want to delete this event request?');">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <button type="submit" class="btn btn-secondary btn-sm" style="color: var(--danger); border-color: var(--danger-soft);" title="Delete">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(events)}">
+                        <td colspan="6" style="text-align: center; padding: 3rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                            <p style="color: var(--text-muted); margin-bottom: 1rem;">No events found.</p>
+                            <a th:href="@{/organizer/events/new}" class="btn btn-primary">Request your first event</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </main>
 </div>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

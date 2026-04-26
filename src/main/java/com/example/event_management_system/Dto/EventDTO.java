@@ -24,7 +24,12 @@ public class EventDTO {
     private String location;
 
     @NotNull(message = "Event date is required")
-    @Future(message = "Event date must be in the future")
+    private java.time.LocalDate date;
+
+    @NotNull(message = "Event time is required")
+    private java.time.LocalTime time;
+
+    // Combined date and time for backend compatibility
     private LocalDateTime eventDate;
 
     private String createdByUsername;

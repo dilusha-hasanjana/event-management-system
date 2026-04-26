@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Faculty Event Management</title>
+    <title>Register - EventHub</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
@@ -11,8 +11,9 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
             <h1>Create Account</h1>
-            <p>Join Faculty Event Management</p>
+            <p>Join EventHub Management</p>
         </div>
 
         <form th:action="@{/register}" th:object="${user}" method="post" class="auth-form">
@@ -21,47 +22,110 @@
             <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
             <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
-                <ul>
+                <ul style="margin-left: 1.5rem; margin-bottom: 0; padding: 0;">
                     <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
                 </ul>
             </div>
 
             <div class="form-group">
-                <label for="fullName">Full Name <span class="required">*</span></label>
+                <label for="fullName">Full Name</label>
                 <input type="text" id="fullName" th:field="*{fullName}" class="form-control" th:errorclass="field-error" required>
                 <div th:if="${#fields.hasErrors('fullName')}" class="error-message" th:errors="*{fullName}"></div>
             </div>
 
             <div class="form-group">
-                <label for="username">Username <span class="required">*</span></label>
+                <label for="username">Username</label>
                 <input type="text" id="username" th:field="*{username}" class="form-control" th:errorclass="field-error" required>
                 <div th:if="${usernameError}" class="error-message" th:text="${usernameError}"></div>
                 <div th:if="${#fields.hasErrors('username')}" class="error-message" th:errors="*{username}"></div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email <span class="required">*</span></label>
+                <label for="email">Email Address</label>
                 <input type="email" id="email" th:field="*{email}" class="form-control" th:errorclass="field-error" required>
                 <div th:if="${emailError}" class="error-message" th:text="${emailError}"></div>
                 <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
             </div>
 
             <div class="form-group">
-                <label for="password">Password <span class="required">*</span></label>
-                <input type="password" id="password" th:field="*{password}" class="form-control" th:errorclass="field-error" required>
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" th:field="*{password}" class="form-control" th:errorclass="field-error" required>
+                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                        <!-- Eye Icon -->
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <!-- Eye Off Icon (hidden by default) -->
+                        <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
                 <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block">Register</button>
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" th:errorclass="field-error" required>
+                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
+                        <!-- Eye Icon -->
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <!-- Eye Off Icon (hidden by default) -->
+                        <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div th:if="${passwordError}" class="error-message" th:text="${passwordError}"></div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Create Account</button>
             </div>
 
             <div class="auth-links">
-                <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+                <p>Already have an account? <a th:href="@{/login}">Sign In</a></p>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Find the input within the same wrapper
+                const wrapper = this.closest('.password-wrapper');
+                const input = wrapper.querySelector('input');
+                const eyeIcon = this.querySelector('.eye-icon');
+                const eyeOffIcon = this.querySelector('.eye-off-icon');
+                
+                if (input.type === 'password') {
+                    // Switch to text
+                    input.type = 'text';
+                    eyeIcon.style.display = 'none';
+                    eyeOffIcon.style.display = 'block';
+                } else {
+                    // Switch to password
+                    input.type = 'password';
+                    eyeIcon.style.display = 'block';
+                    eyeOffIcon.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+
 <!-- Handle interactive alerts -->
 <script th:src="@{/js/alerts.js}"></script>
 </body>

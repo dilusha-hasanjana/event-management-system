@@ -18,9 +18,13 @@ public class SearchByLocationStrategy implements EventSearchStrategy {
 
     @Override
     public List<Event> search(List<Event> events, String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+        String lowerKeyword = keyword.toLowerCase();
         return events.stream()
-                .filter(event -> event.getLocation().toLowerCase()
-                        .contains(keyword.toLowerCase()))
+                .filter(event -> event.getLocation() != null && 
+                        event.getLocation().toLowerCase().contains(lowerKeyword))
                 .collect(Collectors.toList());
     }
 
