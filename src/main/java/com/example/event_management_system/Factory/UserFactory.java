@@ -30,15 +30,4 @@ public class UserFactory {
         return user;
     }
 
-    // Create a Faculty user
-    public static User createFaculty(String username, String email, String password, String fullName, String department) {
-        User faculty = new User();
-        faculty.setUsername(username);
-        faculty.setEmail(email);
-        faculty.setPassword(password);
-        faculty.setFullName(fullName);
-        faculty.setRole(Role.USER);
-        faculty.setActive(true);
-        return faculty;
-    }
 }
