@@ -3,7 +3,6 @@ package com.example.event_management_system.Controller;
 import com.example.event_management_system.Dto.EventDTO;
 import com.example.event_management_system.Dto.UserDTO;
 import com.example.event_management_system.Model.Event;
-import com.example.event_management_system.Model.EventStatus;
 import com.example.event_management_system.Model.Role;
 import com.example.event_management_system.Model.User;
 import com.example.event_management_system.Service.EventService;
@@ -57,6 +56,11 @@ public class AdminController {
         }
 
         try {
+            // Combine date and time into eventDate
+            if (eventDTO.getDate() != null && eventDTO.getTime() != null) {
+                eventDTO.setEventDate(java.time.LocalDateTime.of(eventDTO.getDate(), eventDTO.getTime()));
+            }
+            
             eventService.createEvent(eventDTO, user);
             redirectAttributes.addFlashAttribute("successMessage", "Event created successfully!");
             return "redirect:/admin/events/get";
@@ -95,6 +99,11 @@ public class AdminController {
         }
 
         try {
+            // Combine date and time into eventDate
+            if (eventDTO.getDate() != null && eventDTO.getTime() != null) {
+                eventDTO.setEventDate(java.time.LocalDateTime.of(eventDTO.getDate(), eventDTO.getTime()));
+            }
+            
             eventService.updateEvent(id, eventDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Event updated successfully!");
             return "redirect:/admin/events";
@@ -229,7 +238,13 @@ public class AdminController {
         dto.setTitle(event.getTitle());
         dto.setDescription(event.getDescription());
         dto.setLocation(event.getLocation());
-        dto.setEventDate(event.getEventDate());
+        
+        if (event.getEventDate() != null) {
+            dto.setEventDate(event.getEventDate());
+            dto.setDate(event.getEventDate().toLocalDate());
+            dto.setTime(event.getEventDate().toLocalTime());
+        }
+        
         dto.setPremium(event.isPremium());
         dto.setFeatured(event.isFeatured());
         return dto;

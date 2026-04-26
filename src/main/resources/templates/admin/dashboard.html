@@ -3,56 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Faculty Event Management</title>
+    <title>Admin Dashboard - EventHub</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-<div th:replace="~{fragments/header :: header}"></div>
-<div th:replace="~{fragments/nav :: nav}"></div>
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/nav :: nav}"></div>
 
-<div class="container">
-    <div th:replace="~{fragments/identity :: identity-card}"></div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div th:replace="~{fragments/header :: header(pageTitle='System Overview')}"></div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon">📊</div>
-            <div class="stat-value" th:text="${totalEvents}">0</div>
-            <div class="stat-label">Total Events</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
-            <div class="stat-value" th:text="${totalUsers}">0</div>
-            <div class="stat-label">Total Users</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🔧</div>
-            <div class="stat-value" th:text="${adminCount}">0</div>
-            <div class="stat-label">Admins</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">👤</div>
-            <div class="stat-value" th:text="${regularUserCount}">0</div>
-            <div class="stat-label">Regular Users</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">📅</div>
-            <div class="stat-value" th:text="${upcomingEvents}">0</div>
-            <div class="stat-label">Upcoming Events</div>
-        </div>
-    </div>
+        <!-- Identity Hero Section -->
+        <div th:replace="~{fragments/identity :: identity-card}"></div>
 
-    <div class="quick-actions">
-        <h3>Quick Actions</h3>
-        <div class="action-buttons">
-            <!-- Removed 'Add New Event' quick action as it's accessible via 'Manage Events' -->
-            <a th:href="@{/admin/events}" class="btn btn-secondary">📋 Manage Events</a>
-            <a th:href="@{/admin/users}" class="btn btn-secondary">👥 Manage Users</a>
+        <!-- Stats Grid -->
+        <div class="stats-grid animate-up" style="animation-delay: 0.1s;">
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--primary-soft); color: var(--primary);">📊</div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Events</div>
+                    <div class="stat-value" th:text="${totalEvents}">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--success-soft); color: var(--success);">👥</div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" th:text="${totalUsers}">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--warning-soft); color: var(--warning);">⭐</div>
+                <div class="stat-info">
+                    <div class="stat-label">Admins</div>
+                    <div class="stat-value" th:text="${adminCount}">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon-wrapper" style="background: var(--info-soft); color: var(--info);">📅</div>
+                <div class="stat-info">
+                    <div class="stat-label">Upcoming Events</div>
+                    <div class="stat-value" th:text="${upcomingEvents}">0</div>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Quick Actions -->
+        <div class="card animate-up" style="animation-delay: 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0;">Quick Management</h3>
+                <span class="badge badge-info">Fast Access</span>
+            </div>
+            <div class="action-buttons">
+                <a th:href="@{/admin/events}" class="btn btn-primary">
+                    <span>📋</span> Manage All Events
+                </a>
+                <a th:href="@{/admin/users}" class="btn btn-secondary">
+                    <span>👥</span> User Management
+                </a>
+                <a th:href="@{/admin/events/requests}" class="btn btn-secondary">
+                    <span>🔔</span> View Requests
+                </a>
+            </div>
+        </div>
+        
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </main>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <script th:src="@{/js/admin.js}"></script>
 </body>
 </html>

@@ -47,6 +47,12 @@ public class AuthController {
             return "auth/register";
         }
 
+        // Check if passwords match
+        if (userDTO.getPassword() != null && !userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+            model.addAttribute("passwordError", "Passwords do not match!");
+            return "auth/register";
+        }
+
         if (userService.existsByUsername(userDTO.getUsername())) {
             model.addAttribute("usernameError", "Username already exists!");
             return "auth/register";
